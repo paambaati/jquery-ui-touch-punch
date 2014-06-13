@@ -38,4 +38,8 @@ Just follow these simple steps to enable touch events in your jQuery UI app:
     <script>$('#widget').draggable();</script>
     ```
 
-_Tested on iPad, iPhone, Android and other touch-enabled mobile devices._
+_Tested on iPad, iPhone, Android, IE10 and other touch-enabled mobile devices._
+
+## What exactly is this fork doing?
+
+The original Touch Punch script does not work on touch-based IE10 (like on the Surface devices, for example). This cherry-picks fixes for the new [Pointer Events](http://www.w3.org/Submission/pointer-events/ "W3 Pointer Events Specification") from https://github.com/tsmd/jquery-ui-touch-punch  
