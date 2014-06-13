@@ -12,6 +12,8 @@
  */
 (function ($) {
 
+  var pointerEnabled = window.navigator.pointerEnabled || window.navigator.msPointerEnabled;
+
   // Detect touch support
   $.support.touch = 'ontouchend' in document || pointerEnabled;
 
