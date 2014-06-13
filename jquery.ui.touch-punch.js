@@ -1,7 +1,9 @@
 /*!
  * jQuery UI Touch Punch 0.2.3
+ * Fixes for IE10+ touch-related events cherry-picked from https://github.com/tsmd/jquery-ui-touch-punch
+ * Author: Ganesh Prasannah (exchequer598@gmail.com)
  *
- * Copyright 2011â€“2014, Dave Furfero
+ * Copyright 2011–2014, Dave Furfero
  * Dual licensed under the MIT or GPL Version 2 licenses.
  *
  * Depends:
@@ -11,7 +13,7 @@
 (function ($) {
 
   // Detect touch support
-  $.support.touch = 'ontouchend' in document;
+  $.support.touch = 'ontouchend' in document || pointerEnabled;
 
   // Ignore browsers without touch support
   if (!$.support.touch) {
@@ -31,13 +33,13 @@
   function simulateMouseEvent (event, simulatedType) {
 
     // Ignore multi-touch events
-    if (event.originalEvent.touches.length > 1) {
+    if ((!pointerEnabled && event.originalEvent.touches.length > 1) || (pointerEnabled && !event.isPrimary)) {
       return;
     }
 
     event.preventDefault();
 
-    var touch = event.originalEvent.changedTouches[0],
+    var touch = pointerEnabled ? event.originalEvent : event.originalEvent.changedTouches[0],
         simulatedEvent = document.createEvent('MouseEvents');
     
     // Initialize the simulated mouse event using the touch event's coordinates
@@ -72,7 +74,7 @@
     var self = this;
 
     // Ignore the event if another widget is already being handled
-    if (touchHandled || !self._mouseCapture(event.originalEvent.changedTouches[0])) {
+    if (touchHandled || (!pointerEnabled && !self._mouseCapture(event.originalEvent.changedTouches[0]))) {
       return;
     }
 
@@ -149,11 +151,22 @@
     var self = this;
 
     // Delegate the touch handlers to the widget's element
-    self.element.bind({
-      touchstart: $.proxy(self, '_touchStart'),
-      touchmove: $.proxy(self, '_touchMove'),
-      touchend: $.proxy(self, '_touchEnd')
-    });
+    if (pointerEnabled) {
+      self.element.bind({
+        pointerDown: $.proxy(self, '_touchStart'),
+        pointerMove: $.proxy(self, '_touchMove'),
+        pointerUp: $.proxy(self, '_touchEnd'),
+        MSPointerDown: $.proxy(self, '_touchStart'),
+        MSPointerMove: $.proxy(self, '_touchMove'),
+        MSPointerUp: $.proxy(self, '_touchEnd'),
+      });
+    } else {
+      self.element.bind({
+        touchstart: $.proxy(self, '_touchStart'),
+        touchmove: $.proxy(self, '_touchMove'),
+        touchend: $.proxy(self, '_touchEnd')
+      });
+    }
 
     // Call the original $.ui.mouse init method
     _mouseInit.call(self);
