@@ -43,3 +43,10 @@ _Tested on iPad, iPhone, Android, IE10 and other touch-enabled mobile devices._
 ## What exactly is this fork doing?
 
 The original Touch Punch script does not work on touch-based IE10 (like on the Surface devices, for example). This cherry-picks fixes for the new [Pointer Events](http://www.w3.org/Submission/pointer-events/ "W3 Pointer Events Specification") from https://github.com/tsmd/jquery-ui-touch-punch  
+
+After including the JavaScript file, make sure to also add the following to your stylesheet.
+
+```
+.ui-draggable { -ms-touch-action: none; }
+```
+This disables Microsoft mouse touch events and makes IE10 dispatch mouse events in place of their MSPointer Events.
